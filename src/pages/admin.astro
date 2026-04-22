@@ -1,0 +1,52 @@
+---
+import AdminCategoriesSection from "../components/admin/AdminCategoriesSection.astro";
+import AdminCreateSection from "../components/admin/AdminCreateSection.astro";
+import AdminEditPhotoModal from "../components/admin/AdminEditPhotoModal.astro";
+import AdminHeader from "../components/admin/AdminHeader.astro";
+import AdminLeadsSection from "../components/admin/AdminLeadsSection.astro";
+import AdminPhotosSection from "../components/admin/AdminPhotosSection.astro";
+import Layout from "../layouts/Layout.astro";
+
+const allowedAdminEmails = String(
+  import.meta.env.PUBLIC_ADMIN_ALLOWED_EMAILS || ""
+)
+  .split(",")
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);
+const allowedAdminEmailsEncoded = encodeURIComponent(
+  JSON.stringify(allowedAdminEmails),
+);
+
+const adminCookie = Astro.cookies.get("admin_auth")?.value;
+if (adminCookie !== "1") {
+  return Astro.redirect("/admin-login");
+}
+---
+
+<Layout title="Admin | Aldryck" description="Panel para gestionar categorias y fotos.">
+  <main class="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+    <AdminHeader />
+    <AdminCreateSection />
+    <AdminCategoriesSection />
+    <AdminPhotosSection />
+    <AdminEditPhotoModal />
+    <AdminLeadsSection />
+  </main>
+
+  <div
+    id="admin-config"
+    hidden
+    data-allowed-admin-emails={allowedAdminEmailsEncoded}
+  ></div>
+  <script>
+    import { initAdminPanel } from "../scripts/adminPanel";
+    const configEl = document.getElementById("admin-config");
+    const allowedAdminEmails = JSON.parse(
+      decodeURIComponent(
+        configEl?.getAttribute("data-allowed-admin-emails") || "%5B%5D"
+      )
+    );
+
+    initAdminPanel(allowedAdminEmails);
+  </script>
+</Layout>

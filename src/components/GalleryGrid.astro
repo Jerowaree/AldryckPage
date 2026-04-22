@@ -1,0 +1,115 @@
+---
+type Props = {
+  sectionId?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+};
+
+const {
+  sectionId = "trabajo",
+  eyebrow = "Trabajo",
+  title = "Categorías y fotos",
+  description = "Trabajo organizado por categorías para revisar series completas con ritmo, edición y consistencia visual.",
+} = Astro.props;
+---
+
+<section
+  id={sectionId}
+  class="scroll-mt-24 py-section"
+  aria-labelledby="trabajo-heading"
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div
+      class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+    >
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+          {eyebrow}
+        </p>
+        <h2
+          id="trabajo-heading"
+          class="mt-2 font-display text-5xl tracking-wide text-ink sm:text-6xl"
+        >
+          {title}
+        </h2>
+      </div>
+      <p class="max-w-md text-sm text-ink-muted">
+        {description}
+      </p>
+    </div>
+
+    <div
+      id="gallery-root"
+      data-gallery-root
+      data-page-size="9"
+      class="mt-8"
+    >
+      <div
+        id="category-filters"
+        class="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+      </div>
+      <ul
+        id="gallery-grid"
+        class="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-5"
+      >
+      </ul>
+      <div class="mt-6 flex justify-center">
+        <button
+          id="gallery-load-more"
+          type="button"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface px-5 text-sm font-semibold text-ink-muted transition-colors hover:border-accent/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          Cargar más
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <p id="gallery-status" class="mt-6 text-sm text-ink-muted"></p>
+    </div>
+
+    <dialog
+      id="gallery-lightbox"
+      class="m-auto w-[min(92vw,1100px)] rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl shadow-black/40 backdrop:bg-black/75"
+      aria-label="Vista ampliada de fotografía"
+    >
+      <div class="relative">
+        <button
+          id="lightbox-close"
+          type="button"
+          class="absolute top-3 right-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface/80 text-ink transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          aria-label="Cerrar imagen ampliada"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            class="h-5 w-5"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6l-12 12"></path>
+          </svg>
+        </button>
+        <img
+          id="lightbox-image"
+          src=""
+          alt=""
+          class="max-h-[72vh] w-full rounded-t-2xl object-contain bg-black/20"
+          loading="eager"
+          decoding="async"
+        />
+        <div class="space-y-1 px-5 py-4 sm:px-6">
+          <p id="lightbox-category" class="text-xs font-semibold uppercase tracking-wider text-accent"></p>
+          <p id="lightbox-title" class="font-display text-3xl tracking-wide text-ink sm:text-4xl"></p>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</section>
+
+<script>
+  import { initGalleryGrid } from "../scripts/galleryGrid";
+  initGalleryGrid();
+</script>

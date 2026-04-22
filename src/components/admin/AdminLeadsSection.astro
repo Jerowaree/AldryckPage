@@ -1,0 +1,35 @@
+<section
+  id="leads"
+  class="mt-10 rounded-2xl border border-line bg-surface-elevated p-6 sm:p-8"
+>
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h2 class="font-display text-3xl tracking-wide text-ink">Leads</h2>
+      <p class="mt-2 text-sm text-ink-muted">
+        Mensajes enviados desde el formulario público.
+      </p>
+    </div>
+    <button
+      id="refresh-leads"
+      type="button"
+      class="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-surface px-4 text-sm font-medium text-ink-muted transition-colors hover:border-accent/40 hover:text-ink"
+    >
+      Actualizar
+    </button>
+  </div>
+  <div class="mt-6 overflow-x-auto">
+    <table class="min-w-full border-separate border-spacing-0">
+      <thead>
+        <tr class="text-left text-xs uppercase tracking-wider text-ink-muted">
+          <th class="border-b border-line px-3 py-3 font-semibold">Fecha</th>
+          <th class="border-b border-line px-3 py-3 font-semibold">Nombre</th>
+          <th class="border-b border-line px-3 py-3 font-semibold">Correo</th>
+          <th class="border-b border-line px-3 py-3 font-semibold">Trabajo</th>
+          <th class="border-b border-line px-3 py-3 font-semibold">Mensaje</th>
+        </tr>
+      </thead>
+      <tbody id="lead-list"></tbody>
+    </table>
+  </div>
+  <p id="lead-status" class="mt-4 text-sm text-ink-muted"></p>
+</section>

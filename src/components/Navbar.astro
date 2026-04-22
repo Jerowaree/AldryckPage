@@ -1,0 +1,141 @@
+---
+const links = [
+  { href: "/trabajo", label: "Trabajo" },
+  { href: "/#sobre-mi", label: "Sobre mí" },
+  { href: "/#contacto", label: "Contacto" },
+] as const;
+---
+
+<header
+  id="site-nav"
+  data-solid="false"
+  data-open="false"
+  class="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 ease-out data-[solid=true]:border-line data-[solid=true]:bg-surface/80 data-[solid=true]:shadow-sm data-[solid=true]:backdrop-blur-md supports-backdrop-filter:data-[solid=true]:bg-surface/55"
+>
+  <div
+    class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8"
+  >
+    <a
+      href="/"
+      class="font-display text-2xl tracking-[0.08em] text-ink transition-colors duration-150 hover:text-accent sm:text-3xl"
+      aria-label="Aldryck — inicio"
+    >
+      ALDRYCK
+    </a>
+    <button
+      id="nav-toggle"
+      type="button"
+      class="inline-flex h-11 w-11 items-center justify-center rounded-md border border-line bg-white/5 text-ink transition-colors duration-150 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Abrir menú"
+    >
+      <span class="sr-only">Abrir menú</span>
+      <svg
+        id="icon-open"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        class="h-5 w-5"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+      <svg
+        id="icon-close"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        class="hidden h-5 w-5"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6l-12 12"></path>
+      </svg>
+    </button>
+    <nav class="hidden items-center gap-1 md:flex md:gap-2" aria-label="Principal">
+      {
+        links.map(({ href, label }) => (
+          <a
+            href={href}
+            class="rounded-md px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-150 hover:bg-white/5 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            {label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+  <nav
+    id="mobile-menu"
+    class="mx-auto hidden w-full max-w-6xl px-4 pb-4 sm:px-6 md:hidden"
+    aria-label="Menú móvil"
+  >
+    <div class="rounded-xl border border-line bg-surface-elevated/95 p-2 shadow-lg shadow-black/20 backdrop-blur">
+      {
+        links.map(({ href, label }) => (
+          <a
+            href={href}
+            class="mobile-link block rounded-lg px-4 py-3 text-sm font-medium text-ink-muted transition-colors duration-150 hover:bg-white/5 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+</header>
+
+<script>
+  const nav = document.getElementById("site-nav");
+  if (!nav) throw new Error("Navbar root missing");
+  const toggle = document.getElementById("nav-toggle");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const iconOpen = document.getElementById("icon-open");
+  const iconClose = document.getElementById("icon-close");
+
+  const sync = () => {
+    nav.dataset.solid = window.scrollY > 24 ? "true" : "false";
+  };
+
+  const setMenuState = (open: boolean) => {
+    nav.dataset.open = open ? "true" : "false";
+    if (toggle instanceof HTMLButtonElement) {
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    if (mobileMenu) {
+      mobileMenu.classList.toggle("hidden", !open);
+    }
+    if (iconOpen && iconClose) {
+      iconOpen.classList.toggle("hidden", open);
+      iconClose.classList.toggle("hidden", !open);
+    }
+  };
+
+  if (toggle instanceof HTMLButtonElement) {
+    toggle.addEventListener("click", () => {
+      const isOpen = nav.dataset.open === "true";
+      setMenuState(!isOpen);
+    });
+  }
+
+  const mobileLinks = nav.querySelectorAll(".mobile-link");
+  mobileLinks.forEach((link) =>
+    link.addEventListener("click", () => {
+      setMenuState(false);
+    })
+  );
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 768) {
+      setMenuState(false);
+    }
+  });
+
+  sync();
+  setMenuState(false);
+  window.addEventListener("scroll", sync, { passive: true });
+</script>

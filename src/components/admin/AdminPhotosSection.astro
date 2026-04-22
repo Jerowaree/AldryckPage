@@ -1,0 +1,49 @@
+<section class="mt-10 rounded-2xl border border-line bg-surface-elevated p-6 sm:p-8">
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h2 class="font-display text-3xl tracking-wide text-ink">Fotos cargadas</h2>
+      <p class="mt-2 text-sm text-ink-muted">
+        Elimina imágenes que ya no quieras mostrar o conservar.
+      </p>
+    </div>
+    <button
+      id="refresh-photos"
+      type="button"
+      class="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-surface px-4 text-sm font-medium text-ink-muted transition-colors hover:border-accent/40 hover:text-ink"
+    >
+      Actualizar
+    </button>
+  </div>
+  <div class="mt-5 grid gap-3 sm:grid-cols-2">
+    <label class="grid gap-2 text-sm">
+      <span class="text-ink-muted">Buscar por título</span>
+      <input
+        id="photo-filter-query"
+        type="search"
+        placeholder="Ej: final, retrato, estadio..."
+        class="min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink outline-none transition-colors focus:border-accent"
+      />
+    </label>
+    <label class="grid gap-2 text-sm">
+      <span class="text-ink-muted">Filtrar por categoría</span>
+      <select
+        id="photo-filter-category"
+        class="min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink outline-none transition-colors focus:border-accent"
+      >
+        <option value="all">Todas las categorías</option>
+      </select>
+    </label>
+  </div>
+  <ul id="photo-list" class="mt-6 grid gap-3 sm:grid-cols-2"></ul>
+  <div class="mt-4 flex justify-center">
+    <button
+      id="photo-load-more"
+      type="button"
+      class="inline-flex min-h-10 items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink-muted transition-colors hover:border-accent/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-45"
+    >
+      Cargar más
+      <span aria-hidden="true">→</span>
+    </button>
+  </div>
+  <p id="photo-status" class="mt-4 text-sm text-ink-muted"></p>
+</section>

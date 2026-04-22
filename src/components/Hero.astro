@@ -1,0 +1,127 @@
+---
+---
+
+<section
+  class="relative flex min-h-[82svh] items-start justify-center overflow-hidden pt-28 pb-6 sm:min-h-dvh sm:pt-44 sm:pb-14"
+  aria-label="Portada"
+>
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div
+      class="absolute inset-0 bg-linear-to-t from-surface via-surface/70 to-surface/20"
+    >
+    </div>
+    <div
+      class="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_20%,rgba(245,158,11,0.12),transparent_55%)]"
+    >
+    </div>
+  </div>
+
+  <div
+    class="relative z-10 mx-auto w-full max-w-6xl px-4 text-center sm:px-6 lg:px-8"
+  >
+    <p
+      class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-accent motion-safe:animate-fade-up"
+    >
+      Fotografía deportiva
+    </p>
+    <h1
+      class="font-display text-6xl leading-[0.92] tracking-wide text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:80ms] sm:text-7xl md:text-8xl lg:text-9xl"
+    >
+      ALDRYCK
+    </h1>
+    <p
+      class="mx-auto mt-5 max-w-xl text-balance text-base text-ink-muted motion-safe:animate-fade-up motion-safe:[animation-delay:140ms] sm:text-lg"
+    >
+      Imágenes con emoción real: esfuerzo, mirada y ese segundo que vale toda
+      la historia.
+    </p>
+    <div
+      class="mt-10 flex flex-wrap items-center justify-center gap-4 motion-safe:animate-fade-up motion-safe:[animation-delay:220ms]"
+    >
+      <a
+        href="/trabajo"
+        class="inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-6 text-sm font-semibold text-surface transition-[transform,background-color,color] duration-150 ease-out hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        Ver trabajo
+      </a>
+      <a
+        href="#contacto"
+        class="inline-flex min-h-11 items-center justify-center rounded-md border border-line bg-white/5 px-6 text-sm font-semibold text-ink transition-[transform,background-color,border-color] duration-150 ease-out hover:border-accent/40 hover:bg-white/10 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        Contratar
+      </a>
+    </div>
+  </div>
+
+  <a
+    href="#trabajo"
+    id="hero-scroll-down"
+    class="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 p-1 text-ink-muted transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:bottom-6"
+    aria-label="Bajar a la sección de trabajo"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      class="h-9 w-9 motion-safe:animate-arrow-float"
+      aria-hidden="true"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"></path>
+    </svg>
+  </a>
+</section>
+
+<script>
+  // @ts-nocheck
+  import Lenis from "lenis";
+
+  let lenis = null;
+  let rafStarted = false;
+
+  const getLenis = () => {
+    if (lenis) return lenis;
+    lenis = new Lenis({
+      duration: 1.7,
+      easing: (value) => 1 - Math.pow(1 - value, 4),
+      smoothWheel: false,
+      touchMultiplier: 1.1,
+    });
+
+    if (!rafStarted) {
+      rafStarted = true;
+      const raf = (time) => {
+        lenis?.raf(time);
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+    }
+
+    return lenis;
+  };
+
+  const trigger = document.getElementById("hero-scroll-down");
+  const target = document.getElementById("trabajo");
+
+  if (trigger && target && trigger.dataset.scrollReady !== "1") {
+    trigger.dataset.scrollReady = "1";
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (prefersReducedMotion) {
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        return;
+      }
+
+      try {
+        getLenis().scrollTo(target, { offset: -18, duration: 1.7 });
+      } catch {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+</script>

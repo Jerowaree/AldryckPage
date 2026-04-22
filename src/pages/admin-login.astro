@@ -1,0 +1,157 @@
+---
+import Layout from "../layouts/Layout.astro";
+const allowedAdminEmails = String(
+  import.meta.env.PUBLIC_ADMIN_ALLOWED_EMAILS || ""
+)
+  .split(",")
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);
+const defaultAdminEmail = String(
+  import.meta.env.PUBLIC_ADMIN_DEFAULT_EMAIL || "aldryckmedinaseverino@gmail.com"
+).trim().toLowerCase();
+const allowedAdminEmailsEncoded = encodeURIComponent(
+  JSON.stringify(allowedAdminEmails),
+);
+---
+
+<Layout title="Login Admin | Aldryck" description="Acceso al panel admin por correo.">
+  <main class="mx-auto flex min-h-dvh w-full max-w-xl items-center px-4 py-16 sm:px-6">
+    <div class="w-full">
+      <section class="w-full rounded-2xl border border-line bg-surface-elevated p-6 sm:p-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Admin</p>
+      <h1 class="mt-2 font-display text-5xl tracking-wide text-ink sm:text-6xl">
+        Iniciar sesión
+      </h1>
+      <p class="mt-4 text-sm text-ink-muted">
+        Ingresa tu correo y contraseña para entrar al panel.
+      </p>
+
+      <form id="admin-login-form" class="mt-7 space-y-4">
+        <label class="grid gap-2 text-sm">
+          <span class="text-ink-muted">Correo</span>
+          <input
+            id="admin-email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="tu-correo@dominio.com"
+            value={defaultAdminEmail}
+            class="min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink outline-none transition-colors focus:border-accent"
+          />
+        </label>
+        <label class="grid gap-2 text-sm">
+          <span class="text-ink-muted">Contraseña</span>
+          <input
+            id="admin-password"
+            type="password"
+            required
+            autocomplete="current-password"
+            placeholder="Tu contraseña"
+            class="min-h-11 rounded-lg border border-line bg-surface px-3 text-sm text-ink outline-none transition-colors focus:border-accent"
+          />
+        </label>
+        <button
+          id="admin-login-submit"
+          type="submit"
+          class="inline-flex min-h-11 items-center justify-center rounded-lg bg-accent px-6 text-sm font-semibold text-surface transition-colors hover:bg-accent-hover"
+        >
+          Entrar con contraseña
+        </button>
+        <p id="admin-login-status" class="text-sm text-ink-muted"></p>
+      </form>
+      </section>
+      <a
+        href="/"
+        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-lg border border-line bg-surface px-5 text-sm font-medium text-ink-muted transition-colors hover:border-accent/40 hover:text-ink"
+      >
+        Ir al inicio
+      </a>
+    </div>
+  </main>
+  <div
+    id="admin-login-config"
+    hidden
+    data-allowed-admin-emails={allowedAdminEmailsEncoded}
+  ></div>
+
+  <script>
+    import { getBrowserSupabaseClient } from "../lib/supabase";
+    const configEl = document.getElementById("admin-login-config");
+    const allowedAdminEmails = JSON.parse(
+      decodeURIComponent(
+        configEl?.getAttribute("data-allowed-admin-emails") || "%5B%5D"
+      )
+    );
+
+    const form = document.getElementById("admin-login-form");
+    const emailInput = document.getElementById("admin-email");
+    const passwordInput = document.getElementById("admin-password");
+    const status = document.getElementById("admin-login-status");
+    const submit = document.getElementById("admin-login-submit");
+
+    if (
+      !(form instanceof HTMLFormElement) ||
+      !(emailInput instanceof HTMLInputElement) ||
+      !(passwordInput instanceof HTMLInputElement) ||
+      !(status instanceof HTMLElement) ||
+      !(submit instanceof HTMLButtonElement)
+    ) {
+      throw new Error("Login UI no disponible");
+    }
+
+    const supabase = getBrowserSupabaseClient();
+    const { data } = await supabase.auth.getSession();
+    if (
+      data.session &&
+      allowedAdminEmails.includes((data.session.user.email || "").toLowerCase())
+    ) {
+      document.cookie = "admin_auth=1; Path=/; Max-Age=86400; SameSite=Lax";
+      window.location.href = "/admin";
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const email = emailInput.value.trim().toLowerCase();
+      if (!email) return;
+      if (!allowedAdminEmails.includes(email)) {
+        status.textContent = "Este correo no tiene acceso al panel admin.";
+        return;
+      }
+
+      submit.disabled = true;
+      status.textContent = "Preparando acceso...";
+
+      const syncResponse = await fetch("/api/admin-auth-sync.json", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!syncResponse.ok) {
+        const syncPayload = await syncResponse
+          .json()
+          .catch(() => ({ error: "" }));
+        status.textContent =
+          syncPayload.error ||
+          "No se pudo preparar el acceso admin. Revisa ADMIN_DEFAULT_PASSWORD en .env.";
+        submit.disabled = false;
+        return;
+      }
+
+      status.textContent = "Validando credenciales...";
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: passwordInput.value,
+      });
+
+      if (error) {
+        status.textContent = "Correo o contraseña inválidos.";
+        submit.disabled = false;
+        return;
+      }
+
+      document.cookie = "admin_auth=1; Path=/; Max-Age=86400; SameSite=Lax";
+      window.location.href = "/admin";
+    });
+  </script>
+</Layout>

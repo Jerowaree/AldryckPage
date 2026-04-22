@@ -1,0 +1,263 @@
+---
+const email = "aldryckmedinaseverino@gmail.com";
+const whatsapp = "+51 993 793 849";
+---
+
+<section
+  id="contacto"
+  class="scroll-mt-24 border-t border-line bg-surface-elevated py-section"
+  aria-labelledby="contacto-heading"
+>
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:gap-12 lg:px-8">
+    <div class="max-w-xl lg:col-span-5 lg:pr-6">
+      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+        Contacto
+      </p>
+      <h2
+        id="contacto-heading"
+        class="mt-2 text-balance font-display text-5xl leading-[0.95] tracking-wide text-ink sm:text-6xl"
+      >
+        Cuéntame el encargo
+      </h2>
+      <p class="mt-4 text-ink-muted">
+        Si ya tienes fecha, ubicación y formato de entrega, mejor. Respondo con
+        disponibilidad real y propuesta de trabajo.
+      </p>
+      <div class="mt-6 space-y-2 text-sm text-ink-muted">
+        <p>
+          Correo: <a href={`mailto:${email}`} class="text-ink hover:text-accent">{email}</a>
+        </p>
+        <p>
+          WhatsApp: <a href="https://wa.me/51993793849" target="_blank" rel="noreferrer noopener" class="text-ink hover:text-accent">{whatsapp}</a>
+        </p>
+      </div>
+    </div>
+    <form
+      id="contact-form"
+      class="grid gap-4 rounded-2xl border border-line bg-surface/40 p-5 lg:col-span-7 lg:grid-cols-2 lg:p-6"
+      novalidate
+    >
+      <input
+        type="text"
+        name="website"
+        tabindex="-1"
+        autocomplete="off"
+        class="sr-only"
+        aria-hidden="true"
+      />
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink/90">Nombre</span>
+        <input
+          type="text"
+          name="name"
+          required
+          minlength="2"
+          maxlength="80"
+          pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9.'\-\s]{2,80}$"
+          autocomplete="name"
+          class="min-h-12 rounded-lg border border-line/80 bg-surface-elevated/90 px-4 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-ink-muted/70 hover:border-line focus:border-accent focus:bg-surface-elevated focus:ring-3 focus:ring-accent/20"
+          placeholder="Tu nombre"
+        />
+      </label>
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink/90">Correo</span>
+        <input
+          type="email"
+          name="email"
+          required
+          maxlength="120"
+          autocomplete="email"
+          class="min-h-12 rounded-lg border border-line/80 bg-surface-elevated/90 px-4 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-ink-muted/70 hover:border-line focus:border-accent focus:bg-surface-elevated focus:ring-3 focus:ring-accent/20"
+          placeholder="tu@correo.com"
+        />
+      </label>
+      <label class="grid gap-2 text-sm lg:col-span-2">
+        <span class="font-medium text-ink/90">Tipo de trabajo</span>
+        <input
+          type="text"
+          name="project"
+          required
+          minlength="4"
+          maxlength="120"
+          class="min-h-12 rounded-lg border border-line/80 bg-surface-elevated/90 px-4 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-ink-muted/70 hover:border-line focus:border-accent focus:bg-surface-elevated focus:ring-3 focus:ring-accent/20"
+          placeholder="Cobertura de partido, sesión de atleta, contenido para marca..."
+        />
+      </label>
+      <label class="grid gap-2 text-sm lg:col-span-2">
+        <span class="font-medium text-ink/90">Mensaje</span>
+        <textarea
+          name="message"
+          required
+          rows="5"
+          minlength="20"
+          maxlength="300"
+          class="min-h-[148px] resize-none rounded-lg border border-line/80 bg-surface-elevated/90 px-4 py-3 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-ink-muted/70 hover:border-line focus:border-accent focus:bg-surface-elevated focus:ring-3 focus:ring-accent/20"
+          placeholder="Fecha, ciudad, duración, uso de imágenes y cualquier referencia clave."
+        ></textarea>
+      </label>
+      <div class="flex flex-col gap-2 lg:col-span-2">
+        <button
+          id="contact-submit"
+          type="submit"
+          class="inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-8 text-sm font-semibold text-surface transition-[transform,background-color] duration-150 ease-out hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          Enviar consulta
+        </button>
+        <div
+          id="contact-status"
+          class="hidden rounded-lg border px-3 py-2 text-sm"
+          role="status"
+          aria-live="polite"
+        ></div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("contact-status");
+  const submitButton = document.getElementById("contact-submit");
+  const startedAt = Date.now();
+  const minFillTimeMs = 3500;
+  const submitCooldownMs = 45_000;
+  const submitKey = "contact_form_last_submit_at";
+
+  const sanitizeText = (value: string) =>
+    value
+      .replace(/[<>]/g, "")
+      .replace(/[\u0000-\u001F\u007F]/g, "")
+      .trim();
+
+  const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) && value.length <= 120;
+
+  const setStatus = (type: "success" | "error" | "info", message: string) => {
+    if (!(status instanceof HTMLElement)) return;
+    status.classList.remove(
+      "hidden",
+      "border-emerald-400/40",
+      "bg-emerald-500/10",
+      "text-emerald-200",
+      "border-red-400/40",
+      "bg-red-500/10",
+      "text-red-200",
+      "border-line",
+      "bg-surface-elevated/80",
+      "text-ink-muted"
+    );
+    if (type === "success") {
+      status.classList.add(
+        "border-emerald-400/40",
+        "bg-emerald-500/10",
+        "text-emerald-200"
+      );
+    } else if (type === "error") {
+      status.classList.add("border-red-400/40", "bg-red-500/10", "text-red-200");
+    } else {
+      status.classList.add("border-line", "bg-surface-elevated/80", "text-ink-muted");
+    }
+    status.textContent = message;
+  };
+
+  if (
+    form instanceof HTMLFormElement &&
+    status instanceof HTMLElement &&
+    submitButton instanceof HTMLButtonElement
+  ) {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const trap = String(formData.get("website") || "").trim();
+      const name = sanitizeText(String(formData.get("name") || ""));
+      const email = sanitizeText(String(formData.get("email") || "")).toLowerCase();
+      const project = sanitizeText(String(formData.get("project") || ""));
+      const message = sanitizeText(String(formData.get("message") || ""));
+      const now = Date.now();
+      const lastSubmit = Number(localStorage.getItem(submitKey) || "0");
+
+      if (trap) {
+        setStatus("error", "No se pudo validar el envio.");
+        return;
+      }
+
+      if (now - startedAt < minFillTimeMs) {
+        setStatus(
+          "error",
+          "Espera unos segundos y revisa los campos antes de enviar."
+        );
+        return;
+      }
+
+      if (now - lastSubmit < submitCooldownMs) {
+        setStatus(
+          "error",
+          "Ya recibimos tu intento reciente. Intenta nuevamente en un momento."
+        );
+        return;
+      }
+
+      if (name.length < 2 || name.length > 80) {
+        setStatus("error", "Ingresa un nombre valido (2 a 80 caracteres).");
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        setStatus("error", "Ingresa un correo valido.");
+        return;
+      }
+
+      if (project.length < 4 || project.length > 120) {
+        setStatus(
+          "error",
+          "Indica el tipo de trabajo (4 a 120 caracteres)."
+        );
+        return;
+      }
+
+      if (message.length < 20 || message.length > 300) {
+        setStatus(
+          "error",
+          "El mensaje debe tener entre 20 y 300 caracteres."
+        );
+        return;
+      }
+
+      try {
+        submitButton.disabled = true;
+        submitButton.classList.add("opacity-70", "cursor-not-allowed");
+        setStatus("info", "Enviando consulta...");
+        const response = await fetch("/api/contact-leads.json", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            project,
+            message,
+            website: trap,
+            submittedAt: startedAt,
+          }),
+        });
+        const json = await response.json();
+
+        if (!response.ok) {
+          setStatus(
+            "error",
+            json.error || "No se pudo enviar la consulta. Intenta nuevamente."
+          );
+          return;
+        }
+
+        localStorage.setItem(submitKey, String(now));
+        form.reset();
+        setStatus("success", "Mensaje enviado correctamente. Te respondere pronto.");
+      } catch {
+        setStatus("error", "No se pudo conectar con el servidor. Intenta nuevamente.");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.classList.remove("opacity-70", "cursor-not-allowed");
+      }
+    });
+  }
+</script>

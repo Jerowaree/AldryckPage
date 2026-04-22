@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import GalleryGrid from "../components/GalleryGrid.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="Trabajo por categorías | Aldryck"
+  description="Galería por categorías para revisar sesiones deportivas completas y abrir cada foto en vista ampliada."
+>
+  <Navbar />
+  <main>
+    <section class="border-b border-line bg-surface-elevated pt-32 pb-14 sm:pt-36 sm:pb-16">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+          Portafolio
+        </p>
+        <h1 class="mt-3 font-display text-6xl tracking-wide text-ink sm:text-7xl">
+          Trabajo completo
+        </h1>
+        <p class="mt-4 max-w-3xl text-lg leading-relaxed text-ink/90 sm:text-xl">
+          Cada foto nace de estar en el lugar justo y sentir el pulso real del
+          partido.
+        </p>
+      </div>
+    </section>
+    <GalleryGrid
+      sectionId="colecciones"
+      eyebrow="Colecciones"
+      title="Categorías y sesiones"
+      description="Selecciona una categoría para filtrar y abre cualquier foto para verla más grande."
+    />
+    <ContactCTA />
+  </main>
+  <Footer />
+</Layout>

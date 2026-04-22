@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+/* —— Design tokens (Tailwind v4 @theme) —— */
+@theme {
+  /* Palette: carbón + acento ámbar (energía / foco deportivo) */
+  --color-surface: #050507;
+  --color-surface-elevated: #0c0c10;
+  --color-ink: #f4f4f5;
+  --color-ink-muted: #a1a1aa;
+  --color-accent: #f59e0b;
+  --color-accent-hover: #fbbf24;
+  --color-line: rgba(255, 255, 255, 0.08);
+
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bebas Neue", ui-sans-serif, system-ui, sans-serif;
+
+  --spacing-section: clamp(4rem, 10vw, 7rem);
+
+  --animate-fade-up: fade-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-up-slow: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-hero-image: hero-ken 12s cubic-bezier(0.33, 1, 0.68, 1) infinite
+    alternate;
+  --animate-arrow-float: arrow-float 1.8s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-ken {
+  from {
+    transform: scale(1.08) translate3d(-1%, 0, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(1%, -0.5%, 0);
+  }
+}
+
+@keyframes arrow-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-surface text-ink antialiased;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-ink;
+  }
+}

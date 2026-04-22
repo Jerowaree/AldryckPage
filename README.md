@@ -1,43 +1,109 @@
-# Astro Starter Kit: Minimal
+# Aldryck Portfolio (Astro + Tailwind + Supabase)
 
-```sh
-pnpm create astro@latest -- --template minimal
+Frontend del portfolio de fotografia deportiva, preparado para gestionar galeria y categorias con Supabase.
+
+## Requisitos
+
+- Node `>=22.12.0`
+- pnpm
+- Proyecto Supabase creado
+
+## Variables de entorno
+
+1. Copia el ejemplo:
+
+```bash
+cp .env.example .env
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+2. Completa:
 
-## 🚀 Project Structure
+```env
+PUBLIC_SUPABASE_URL=
+PUBLIC_SUPABASE_ANON_KEY=
+PUBLIC_SUPABASE_BUCKET=portfolio
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-Inside of your Astro project, you'll see the following folders and files:
+- `PUBLIC_*` se usa en cliente.
+- `SUPABASE_SERVICE_ROLE_KEY` es obligatoria para `/admin` (crear categorias y subir fotos).
+- Si agregas o cambias variables en `.env`, reinicia `pnpm dev`.
+
+## Preparar base de datos y storage
+
+1. Abre el SQL Editor de Supabase.
+2. Ejecuta `supabase/schema.sql`.
+
+Esto crea:
+
+- Tabla `categories`
+- Tabla `photos`
+- Politicas RLS (lectura publica de fotos publicadas)
+- Bucket publico `portfolio` con limite y tipos permitidos
+
+## Endpoints preparados
+
+- `GET /api/categories.json`
+- `GET /api/gallery.json`
+- `POST /api/upload-photo.json` (multipart/form-data)
+
+Campos para subida:
+
+- `file`
+- `title`
+- `categoryId`
+- `description` (opcional)
+- `shotAt` (opcional, ISO)
+- `isPublished` (`true`/`false`)
+
+## Estructura importante
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+├── lib/
+│   ├── supabase.ts    # cliente de Supabase (browser/server)
+│   └── portfolio.ts   # helpers para categorias/fotos y upload + insert
+├── data/
+├── components/
+├── layouts/
+└── pages/
+supabase/
+└── schema.sql
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Uso rapido en frontend
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```ts
+import { getBrowserSupabaseClient } from "../lib/supabase";
+import {
+  fetchCategories,
+  fetchPublishedPhotos,
+  uploadPhotoAndCreateRecord,
+} from "../lib/portfolio";
 
-Any static assets, like images, can be placed in the `public/` directory.
+const supabase = getBrowserSupabaseClient();
+const categories = await fetchCategories(supabase);
+const photos = await fetchPublishedPhotos(supabase);
+```
 
-## 🧞 Commands
+Para subir imagen:
 
-All commands are run from the root of the project, from a terminal:
+```ts
+await uploadPhotoAndCreateRecord(supabase, {
+  file,
+  title: "Final sprint",
+  categoryId: selectedCategoryId,
+  description: "100m final",
+  isPublished: true,
+});
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+## Comandos
 
-## 👀 Want to learn more?
+- `pnpm dev`: desarrollo local
+- `pnpm build`: build de produccion
+- `pnpm preview`: vista previa local
+- `pnpm format`: formatea con Prettier
+- `pnpm format:check`: valida formato
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Nota: el proyecto esta en modo `output: "server"` para soportar endpoints `POST` en produccion.
